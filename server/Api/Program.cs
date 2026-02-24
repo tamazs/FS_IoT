@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using Api.Services;
 using DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +77,8 @@ public class Program
         services.AddOpenApi();
         services.AddOpenApiDocument();
         services.AddCors();
+        
+        services.AddScoped<IAuthService, AuthService>();
         
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
