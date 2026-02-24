@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,8 +31,6 @@ public class Program
         });
         
         services.Configure<HostOptions>(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(0));
-
-        //services.AddInMemorySseBackplane();
         
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
@@ -82,7 +81,7 @@ public class Program
         services.AddExceptionHandler<GlobalExceptionHandler>();
     }
 
-    public static void Main()
+    public static async Task Main()
     {
         var builder = WebApplication.CreateBuilder();
         ConfigureServices(builder.Services);
@@ -100,7 +99,7 @@ public class Program
         app.MapControllers();
         
         var mqttClient = app.Services.GetRequiredService<IMqttClientService>();
-        mqttClient.ConnectAsync(appOptions.MqttBroker, 1883);
+        await mqttClient.ConnectAsync(appOptions.MqttBroker);
         
         app.GenerateApiClientsFromOpenApi("/../../client/src/generated-ts-client.ts");
         app.Run();
