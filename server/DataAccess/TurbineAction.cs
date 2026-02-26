@@ -7,7 +7,7 @@ public class TurbineAction
     public string UserId { get; set; }
     public User User { get; set; }
     public DateTime Timestamp { get; set; }
-    public ActionType ActionType { get; set; }
+    public string ActionType { get; set; }
     
     public int? IntervalValue { get; set; }
     

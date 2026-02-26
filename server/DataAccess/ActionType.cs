@@ -2,8 +2,8 @@
 
 public enum ActionType
 {
-    Start,
-    Stop,
-    SetInterval,
-    SetPitch
+    start,
+    stop,
+    setInterval,
+    setPitch
 }

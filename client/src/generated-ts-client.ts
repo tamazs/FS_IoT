@@ -7,6 +7,54 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
+export class ActionClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    sendCommand(turbineId: string, command: TurbineCommand): Promise<void> {
+        let url_ = this.baseUrl + "/{turbineId}/command";
+        if (turbineId === undefined || turbineId === null)
+            throw new globalThis.Error("The parameter 'turbineId' must be defined.");
+        url_ = url_.replace("{turbineId}", encodeURIComponent("" + turbineId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSendCommand(_response);
+        });
+    }
+
+    protected processSendCommand(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
 export class AuthClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -129,6 +177,140 @@ export class AuthClient {
     }
 }
 
+export class WebClientClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getMeasurements(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfMeasurement> {
+        let url_ = this.baseUrl + "/GetMeasurements?";
+        if (connectionId === null)
+            throw new globalThis.Error("The parameter 'connectionId' cannot be null.");
+        else if (connectionId !== undefined)
+            url_ += "connectionId=" + encodeURIComponent("" + connectionId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetMeasurements(_response);
+        });
+    }
+
+    protected processGetMeasurements(response: Response): Promise<RealtimeListenResponseOfListOfMeasurement> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as RealtimeListenResponseOfListOfMeasurement;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RealtimeListenResponseOfListOfMeasurement>(null as any);
+    }
+
+    getAlerts(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfAlert> {
+        let url_ = this.baseUrl + "/GetAlerts?";
+        if (connectionId === null)
+            throw new globalThis.Error("The parameter 'connectionId' cannot be null.");
+        else if (connectionId !== undefined)
+            url_ += "connectionId=" + encodeURIComponent("" + connectionId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAlerts(_response);
+        });
+    }
+
+    protected processGetAlerts(response: Response): Promise<RealtimeListenResponseOfListOfAlert> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as RealtimeListenResponseOfListOfAlert;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RealtimeListenResponseOfListOfAlert>(null as any);
+    }
+
+    connect(): Promise<void> {
+        let url_ = this.baseUrl + "/sse";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processConnect(_response);
+        });
+    }
+
+    protected processConnect(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface TurbineCommand {
+    action: string;
+}
+
+export interface SetIntervalCommand extends TurbineCommand {
+    value: number;
+}
+
+export interface StopCommand extends TurbineCommand {
+    reason: string | undefined;
+}
+
+export interface StartCommand extends TurbineCommand {
+}
+
+export interface SetPitchCommand extends TurbineCommand {
+    angle: number;
+}
+
 export interface UserDto {
     userId: string;
     userName: string;
@@ -154,6 +336,49 @@ export interface LoginRequestDto {
 
 export interface RefreshTokenRequestDto {
     refreshToken: string;
+}
+
+/** Returned by subscribe endpoints so the client knows which SSE group to listen on. */
+export interface RealtimeListenResponse {
+    group: string;
+}
+
+/** Returned by subscribe endpoints with initial data. The client receives the current state immediately and knows which SSE group to listen on for subsequent updates. */
+export interface RealtimeListenResponseOfListOfMeasurement extends RealtimeListenResponse {
+    data: Measurement[] | undefined;
+}
+
+export interface Measurement {
+    id: string;
+    turbineId: string;
+    turbineName: string;
+    farmId: string;
+    timestamp: string;
+    windSpeed: number;
+    windDirection: number;
+    ambientTemperature: number;
+    rotorSpeed: number;
+    powerOutput: number;
+    nacelleDirection: number;
+    bladePitch: number;
+    generatorTemp: number;
+    gearboxTemp: number;
+    vibration: number;
+    status: string;
+}
+
+/** Returned by subscribe endpoints with initial data. The client receives the current state immediately and knows which SSE group to listen on for subsequent updates. */
+export interface RealtimeListenResponseOfListOfAlert extends RealtimeListenResponse {
+    data: Alert[] | undefined;
+}
+
+export interface Alert {
+    id: string;
+    turbineId: string;
+    farmId: string;
+    timestamp: string;
+    severity: string;
+    message: string;
 }
 
 export class ApiException extends Error {

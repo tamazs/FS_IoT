@@ -95,7 +95,7 @@ public class Program
         app.UseExceptionHandler();
         app.UseOpenApi();
         app.UseSwaggerUi();
-
+        
         app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().SetIsOriginAllowed(x => true));
         app.UseAuthentication();
         app.UseAuthorization();
