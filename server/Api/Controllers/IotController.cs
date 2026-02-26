@@ -9,7 +9,6 @@ public class IotController(ILogger<IotController> logger, AppDbContext dbContext
     [MqttRoute("farm/TM_FS_IoT/windmill/+/telemetry")]
     public async Task ListenForMeasurements(Measurement m)
     {
-        logger.LogInformation(JsonSerializer.Serialize(m));
         m.Id = Guid.NewGuid().ToString();
         await dbContext.Measurements.AddAsync(m);
         await dbContext.SaveChangesAsync();

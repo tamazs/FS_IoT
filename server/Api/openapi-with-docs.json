@@ -6,6 +6,42 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/{turbineId}/command": {
+      "post": {
+        "tags": [
+          "Action"
+        ],
+        "operationId": "Action_SendCommand",
+        "parameters": [
+          {
+            "name": "turbineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TurbineCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/RegisterUser": {
       "post": {
         "tags": [
@@ -132,6 +168,36 @@
         }
       }
     },
+    "/GetAlerts": {
+      "get": {
+        "tags": [
+          "WebClient"
+        ],
+        "operationId": "WebClient_GetAlerts",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RealtimeListenResponseOfListOfAlert"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/sse": {
       "get": {
         "tags": [
@@ -148,6 +214,100 @@
   },
   "components": {
     "schemas": {
+      "TurbineCommand": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "action",
+          "mapping": {
+            "setInterval": "#/components/schemas/SetIntervalCommand",
+            "stop": "#/components/schemas/StopCommand",
+            "start": "#/components/schemas/StartCommand",
+            "setPitch": "#/components/schemas/SetPitchCommand"
+          }
+        },
+        "x-abstract": true,
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        }
+      },
+      "SetIntervalCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TurbineCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "type": "integer",
+                "format": "int32",
+                "maximum": 60.0,
+                "minimum": 1.0
+              }
+            }
+          }
+        ]
+      },
+      "StopCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TurbineCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "reason": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "StartCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TurbineCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "SetPitchCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TurbineCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "angle"
+            ],
+            "properties": {
+              "angle": {
+                "type": "number",
+                "format": "double",
+                "maximum": 30.0,
+                "minimum": 0.0
+              }
+            }
+          }
+        ]
+      },
       "UserDto": {
         "type": "object",
         "additionalProperties": false,
@@ -324,6 +484,52 @@
         "additionalProperties": false,
         "properties": {
           "group": {
+            "type": "string"
+          }
+        }
+      },
+      "RealtimeListenResponseOfListOfAlert": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeListenResponse"
+          },
+          {
+            "type": "object",
+            "description": "Returned by subscribe endpoints with initial data. The client receives the current state\nimmediately and knows which SSE group to listen on for subsequent updates.",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/Alert"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Alert": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "turbineId": {
+            "type": "string"
+          },
+          "farmId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "message": {
             "type": "string"
           }
         }
