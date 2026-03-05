@@ -42,6 +42,39 @@
         }
       }
     },
+    "/GetActions": {
+      "get": {
+        "tags": [
+          "Action"
+        ],
+        "operationId": "Action_GetActions",
+        "parameters": [
+          {
+            "name": "turbineId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TurbineActionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/RegisterUser": {
       "post": {
         "tags": [
@@ -307,6 +340,42 @@
             }
           }
         ]
+      },
+      "TurbineActionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "turbineId": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actionType": {
+            "type": "string"
+          },
+          "intervalValue": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "stopReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "pitchAngle": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
       },
       "UserDto": {
         "type": "object",

@@ -53,6 +53,43 @@ export class ActionClient {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    getActions(turbineId: string | undefined): Promise<TurbineActionDto[]> {
+        let url_ = this.baseUrl + "/GetActions?";
+        if (turbineId === null)
+            throw new globalThis.Error("The parameter 'turbineId' cannot be null.");
+        else if (turbineId !== undefined)
+            url_ += "turbineId=" + encodeURIComponent("" + turbineId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetActions(_response);
+        });
+    }
+
+    protected processGetActions(response: Response): Promise<TurbineActionDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TurbineActionDto[];
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TurbineActionDto[]>(null as any);
+    }
 }
 
 export class AuthClient {
@@ -309,6 +346,17 @@ export interface StartCommand extends TurbineCommand {
 
 export interface SetPitchCommand extends TurbineCommand {
     angle: number;
+}
+
+export interface TurbineActionDto {
+    id: string;
+    turbineId: string;
+    userName: string;
+    timestamp: string;
+    actionType: string;
+    intervalValue: number | undefined;
+    stopReason: string | undefined;
+    pitchAngle: number | undefined;
 }
 
 export interface UserDto {
