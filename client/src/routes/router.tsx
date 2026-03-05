@@ -1,11 +1,12 @@
 import {createBrowserRouter} from "react-router";
 
 import Layout from "../layout/Layout.tsx";
-import PlayerDashboard from "../pages/player/PlayerDashboard.tsx";
 import LoginPage from "../pages/LoginPage.tsx";
 
 import ProtectedRoute from "./ProtectedRoute.tsx";
 import RegisterPage from "../pages/RegisterPage.tsx";
+import DashboardPage from "../pages/DashboardPage.tsx";
+import TurbinePage from "../pages/TurbinePage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -19,7 +20,15 @@ export const router = createBrowserRouter([
 
             {
                 index: true,
-                element: <PlayerDashboard />
+                element: <DashboardPage />
+            },
+            {
+                path: "turbine/:turbineId",
+                element: (
+                    <ProtectedRoute>
+                        <TurbinePage />
+                    </ProtectedRoute>
+                )
             },
         ]
     },

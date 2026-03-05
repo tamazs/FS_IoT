@@ -1,13 +1,12 @@
 import { NavLink } from "react-router";
-import {loggedInUserAtom} from "../../atoms/atom.ts";
+import {loggedInUserAtom, turbinesAtom} from "../../atoms/atom.ts";
 import {useAtom} from "jotai";
 import useApi from "../../hooks/useApi.ts";
-
-const TURBINE_IDS = ["T001", "T002", "T003", "T004", "T005"];
 
 export default function Sidebar() {
     const [loggedInUser] = useAtom(loggedInUserAtom);
     const api = useApi();
+    const [turbines] = useAtom(turbinesAtom);
 
     return (
         <aside className="w-64 min-h-screen bg-base-100 border-r border-base-300 flex flex-col">
@@ -62,7 +61,7 @@ export default function Sidebar() {
 
                 <div className="pt-4">
                     <p className="px-3 text-xs font-semibold text-base-content/40 uppercase tracking-wider mb-2">Turbines</p>
-                    {TURBINE_IDS.map((id) => (
+                    {turbines.map(({ id, name }) => (
                         <NavLink
                             key={id}
                             to={`/turbine/${id}`}
@@ -73,7 +72,7 @@ export default function Sidebar() {
                             }
                         >
                             <span className="w-2 h-2 rounded-full bg-success inline-block" />
-                            Turbine {id}
+                            {name}
                         </NavLink>
                     ))}
                 </div>

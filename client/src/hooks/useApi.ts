@@ -1,12 +1,20 @@
-import {AuthClient, type LoginRequestDto, type RegisterRequestDto} from "../generated-ts-client.ts";
+import {
+    ActionClient,
+    AuthClient,
+    type LoginRequestDto,
+    type RegisterRequestDto,
+    type TurbineCommand
+} from "../generated-ts-client.ts";
 import {finalUrl} from "../baseUrl.ts";
 import toast from "react-hot-toast";
 import customcatch from "../errors/customCatch.ts";
 import {useAtom} from "jotai";
 import {accessTokenAtom, loggedInUserAtom, refreshTokenAtom} from "../atoms/atom.ts";
 import { useNavigate } from "react-router";
+import {customFetch} from "./customFetch.ts";
 
 const authClient = new AuthClient(finalUrl);
+const actionClient = new ActionClient(finalUrl, customFetch)
 
 export default function useApi() {
     const navigate = useNavigate();
@@ -59,9 +67,21 @@ export default function useApi() {
         navigate("/login");
     }
 
+    async function sendAction(turbineId: string, action: TurbineCommand) {
+        try {
+            const result = await actionClient.sendCommand(turbineId, action);
+            toast.success("Action sent successfully!");
+            return result;
+        }
+        catch (e) {
+            customcatch(e);
+        }
+    }
+
     return {
         loginUser,
         registerUser,
         logoutUser,
+        sendAction
     }
 }

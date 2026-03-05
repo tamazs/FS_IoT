@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Api.DTOs.Requests;
 using DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mqtt.Controllers;
 
@@ -9,6 +10,7 @@ namespace Api.Controllers;
 [ApiController]
 public class ActionController(IMqttClientService mqtt, AppDbContext dbContext) : BaseController
 {
+    [Authorize]
     [HttpPost("{turbineId}/command")]
     public async Task SendCommand(string turbineId,[FromBody] TurbineCommand command)
     {
@@ -16,7 +18,7 @@ public class ActionController(IMqttClientService mqtt, AppDbContext dbContext) :
         {
             Id = Guid.NewGuid().ToString(),
             TurbineId = turbineId,
-            UserId = "85aab6ec-caff-4fc9-a169-dc394eb7ddcd",
+            UserId = CurrentUserId!,
             Timestamp = DateTime.UtcNow,
             ActionType = command switch
             {
