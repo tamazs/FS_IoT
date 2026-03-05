@@ -1,34 +1,36 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useMeasurementsSSE, useAlertsSSE } from "../hooks/useSse";
-import type { Measurement } from "../generated-ts-client";
+import useApi from "../hooks/useApi";
+import type { TurbineActionDto } from "../generated-ts-client";
 import StatCard from "../components/ui/StatCard";
 import CommandPanel from "../components/turbine/CommandPanel";
 import AlertList from "../components/dashboard/AlertList";
+import ActionHistory from "../components/turbine/ActionHistory";
 import { MetricChart, TemperatureChart } from "../components/charts/MetricChart";
 
 export default function TurbinePage() {
     const { turbineId } = useParams<{ turbineId: string }>();
-    const [history, setHistory] = useState<Measurement[]>([]);
-    const [tab, setTab] = useState<"metrics" | "alerts">("metrics");
+    const api = useApi();
+    const [actions, setActions] = useState<TurbineActionDto[]>([]);
+    const [tab, setTab] = useState<"metrics" | "alerts" | "history">("metrics");
 
     const allMeasurements = useMeasurementsSSE();
     const allAlerts = useAlertsSSE();
 
-    const liveMeasurements = allMeasurements?.filter((m) => m.turbineId === turbineId) ?? [];
-    const alerts = allAlerts?.filter((a) => a.turbineId === turbineId) ?? [];
-    const latest = liveMeasurements[liveMeasurements.length - 1] ?? null;
+    const measurements = (allMeasurements ?? [])
+        .filter(m => m.turbineId === turbineId)
+        .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 
-    // Build chart history from incoming SSE data
+    const alerts = (allAlerts ?? []).filter(a => a.turbineId === turbineId);
+    const latest = measurements[measurements.length - 1] ?? null;
+
     useEffect(() => {
-        if (liveMeasurements.length > 0) {
-            setHistory((prev) => {
-                const combined = [...prev, ...liveMeasurements];
-                const seen = new Set<string>();
-                return combined.filter((m) => !seen.has(m.id) && seen.add(m.id) as unknown as boolean).slice(-60);
-            });
-        }
-    }, [allMeasurements]);
+        setTab("metrics");
+        api.getActions(turbineId!).then(result => {
+            if (result) setActions(result);
+        });
+    }, [turbineId]);
 
     function statusColor(s?: string) {
         const map: Record<string, string> = { running: "badge-success", stopped: "badge-error", maintenance: "badge-warning" };
@@ -69,17 +71,18 @@ export default function TurbinePage() {
                                 <span className="badge badge-error badge-xs ml-1">{alerts.filter(a => a.severity === "critical").length}</span>
                             )}
                         </button>
+                        <button className={`tab ${tab === "history" ? "tab-active" : ""}`} onClick={() => setTab("history")}>Action History</button>
                     </div>
 
                     {tab === "metrics" && (
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <MetricChart data={history} metric="powerOutput" label="Power Output" unit="kW" color="#22c55e" />
-                                <MetricChart data={history} metric="windSpeed" label="Wind Speed" unit="m/s" color="#3b82f6" />
-                                <MetricChart data={history} metric="rotorSpeed" label="Rotor Speed" unit="RPM" color="#570df8" />
-                                <MetricChart data={history} metric="vibration" label="Vibration" unit="g" color="#f59e0b" />
+                                <MetricChart data={measurements} metric="powerOutput" label="Power Output" unit="kW" color="#22c55e" />
+                                <MetricChart data={measurements} metric="windSpeed" label="Wind Speed" unit="m/s" color="#3b82f6" />
+                                <MetricChart data={measurements} metric="rotorSpeed" label="Rotor Speed" unit="RPM" color="#570df8" />
+                                <MetricChart data={measurements} metric="vibration" label="Vibration" unit="g" color="#f59e0b" />
                             </div>
-                            <TemperatureChart data={history} />
+                            <TemperatureChart data={measurements} />
                         </div>
                     )}
 
@@ -90,10 +93,23 @@ export default function TurbinePage() {
                             </div>
                         </div>
                     )}
+
+                    {tab === "history" && (
+                        <div className="card bg-base-100 shadow-sm border border-base-300">
+                            <div className="card-body p-4">
+                                <ActionHistory actions={actions} />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="xl:col-span-1">
-                    <CommandPanel turbineId={turbineId!} />
+                    <CommandPanel
+                        turbineId={turbineId!}
+                        onSuccess={() => api.getActions(turbineId!).then(result => {
+                            if (result) setActions(result);
+                        })}
+                    />
                 </div>
             </div>
         </div>

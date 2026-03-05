@@ -13,10 +13,6 @@ export default function Sidebar() {
             {/* Brand */}
             <div className="px-6 py-5 border-b border-base-300">
                 <div className="flex items-center gap-2">
-                    <svg className="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                              d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.02 12.02.708.708M1 12h2m18 0h2M4.22 19.78l.707-.707M18.95 5.05l.708-.708M12 7a5 5 0 100 10A5 5 0 0012 7z" />
-                    </svg>
                     <div>
                         <div className="font-bold text-sm leading-none">FS+IoT</div>
                         <div className="text-xs text-base-content/50 mt-0.5">Control Centre</div>
@@ -44,21 +40,6 @@ export default function Sidebar() {
                     Dashboard
                 </NavLink>
 
-                <NavLink
-                    to="/alerts"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                            isActive ? "bg-primary text-primary-content" : "hover:bg-base-200"
-                        }`
-                    }
-                >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    Alerts
-                </NavLink>
-
                 <div className="pt-4">
                     <p className="px-3 text-xs font-semibold text-base-content/40 uppercase tracking-wider mb-2">Turbines</p>
                     {turbines.map(({ id, name }) => (
@@ -82,7 +63,7 @@ export default function Sidebar() {
             <div className="px-4 py-4 border-t border-base-300">
                 <div className="flex items-center gap-3">
                     <div className="avatar placeholder">
-                        <div className="w-8 h-8 rounded-full bg-primary text-primary-content">
+                        <div className="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
                             <span className="text-xs">{loggedInUser?.userName?.[0]?.toUpperCase()}</span>
                         </div>
                     </div>

@@ -1,11 +1,12 @@
-﻿namespace DataAccess;
+﻿using DataAccess;
 
-public class TurbineAction
+namespace Api.DTOs;
+
+public class TurbineActionDto
 {
     public string Id { get; set; }
     public string TurbineId { get; set; }
-    public string UserId { get; set; }
-    public User User { get; set; }
+    public string UserName { get; set; }
     public DateTime Timestamp { get; set; }
     public string ActionType { get; set; }
     

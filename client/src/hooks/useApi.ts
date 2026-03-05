@@ -78,10 +78,21 @@ export default function useApi() {
         }
     }
 
+    async function getActions(turbineId: string) {
+        try {
+            const result = await actionClient.getActions(turbineId);
+            return result;
+        }
+        catch (e) {
+            customcatch(e);
+        }
+    }
+
     return {
         loginUser,
         registerUser,
         logoutUser,
-        sendAction
+        sendAction,
+        getActions
     }
 }

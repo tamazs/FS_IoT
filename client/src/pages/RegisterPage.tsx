@@ -20,10 +20,6 @@ export default function RegisterPage() {
             <div className="w-full max-w-sm">
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-2 mb-2">
-                        <svg className="w-10 h-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                                  d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.02 12.02.708.708M1 12h2m18 0h2M4.22 19.78l.707-.707M18.95 5.05l.708-.708M12 7a5 5 0 100 10A5 5 0 0012 7z" />
-                        </svg>
                         <span className="text-2xl font-bold tracking-tight">FS+IoT</span>
                     </div>
                     <p className="text-base-content/60 text-sm">Wind Turbine Control Centre</p>

@@ -29,14 +29,8 @@ export default function TurbineCard({ turbineId, measurement }: TurbineCardProps
             <div className="card-body p-5">
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                      d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.02 12.02.708.708M1 12h2m18 0h2" />
-                            </svg>
-                        </div>
                         <div>
-                            <div className="font-semibold text-sm">{m?.turbineName ?? turbineId}</div>
+                            <div className="font-semibold text-sm">{m?.turbineName}</div>
                             <div className="text-xs text-base-content/40">{turbineId}</div>
                         </div>
                     </div>

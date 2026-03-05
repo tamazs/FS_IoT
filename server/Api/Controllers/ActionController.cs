@@ -1,8 +1,10 @@
 ﻿using System.Text.Json;
+using Api.DTOs;
 using Api.DTOs.Requests;
 using DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Mqtt.Controllers;
 
 namespace Api.Controllers;
@@ -41,5 +43,24 @@ public class ActionController(IMqttClientService mqtt, AppDbContext dbContext) :
         var payload = JsonSerializer.Serialize(command);
         Console.WriteLine(payload);
         await mqtt.PublishAsync(topic, payload);
+    }
+
+    [Authorize]
+    [HttpGet(nameof(GetActions))]
+    public async Task<List<TurbineActionDto>> GetActions(string turbineId)
+    {
+        var actions = await dbContext.TurbineActions.Where(a => a.TurbineId == turbineId).Include(a => a.User).ToListAsync();
+        
+        return actions.Select(a => new TurbineActionDto
+        {
+            Id = a.Id,
+            TurbineId = a.TurbineId,
+            UserName = a.User.Username,
+            Timestamp = a.Timestamp,
+            ActionType = a.ActionType,
+            IntervalValue = a.IntervalValue,
+            StopReason = a.StopReason,
+            PitchAngle = a.PitchAngle,
+        }).ToList();
     }
 }
