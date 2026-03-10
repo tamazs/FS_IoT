@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
                         <TurbinePage />
                     </ProtectedRoute>
                 )
-            },
+            }
         ]
     },
 

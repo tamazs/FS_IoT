@@ -20,6 +20,7 @@ function formatTime(ts: string) {
 export function MetricChart({ data, metric, label, unit, color = "#570df8", type = "area" }: MetricChartProps) {
     const chartData = data.map((m) => ({
         time: formatTime(m.timestamp),
+        fullTime: new Date(m.timestamp).toLocaleString(),  // for tooltip
         value: Number((m[metric] as number).toFixed(2)),
     }));
 
@@ -44,6 +45,7 @@ export function MetricChart({ data, metric, label, unit, color = "#570df8", type
                             <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} width={40} />
                             <Tooltip
                                 contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e5e7eb" }}
+                                labelFormatter={(_, payload) => payload?.[0]?.payload?.fullTime ?? ""}
                                 formatter={(v: number | undefined) => [`${v} ${unit}`, label]}
                             />
                             <Area type="monotone" dataKey="value" stroke={color} strokeWidth={2} fill={`url(#grad-${metric})`} dot={false} />
@@ -69,6 +71,7 @@ export function MetricChart({ data, metric, label, unit, color = "#570df8", type
 export function TemperatureChart({ data }: { data: Measurement[] }) {
     const chartData = data.map((m) => ({
         time: formatTime(m.timestamp),
+        fullTime: new Date(m.timestamp).toLocaleString(),
         generator: Number(m.generatorTemp.toFixed(1)),
         gearbox: Number(m.gearboxTemp.toFixed(1)),
         ambient: Number(m.ambientTemperature.toFixed(1)),
@@ -85,6 +88,7 @@ export function TemperatureChart({ data }: { data: Measurement[] }) {
                         <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} width={35} unit="°C" />
                         <Tooltip
                             contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e5e7eb" }}
+                            labelFormatter={(_, payload) => payload?.[0]?.payload?.fullTime ?? ""}
                             formatter={(v: number | undefined, name: string | undefined) => [`${v}°C`, name]}
                         />
                         <Legend wrapperStyle={{ fontSize: 11 }} />

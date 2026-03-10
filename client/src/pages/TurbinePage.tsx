@@ -14,13 +14,15 @@ export default function TurbinePage() {
     const api = useApi();
     const [actions, setActions] = useState<TurbineActionDto[]>([]);
     const [tab, setTab] = useState<"metrics" | "alerts" | "history">("metrics");
+    const [limit, setLimit] = useState(100);
 
     const allMeasurements = useMeasurementsSSE();
     const allAlerts = useAlertsSSE();
 
     const measurements = (allMeasurements ?? [])
         .filter(m => m.turbineId === turbineId)
-        .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+        .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+        .slice(-limit);
 
     const alerts = (allAlerts ?? []).filter(a => a.turbineId === turbineId);
     const latest = measurements[measurements.length - 1] ?? null;
@@ -63,15 +65,31 @@ export default function TurbinePage() {
                         <StatCard label="Nacelle Dir." value={latest?.nacelleDirection.toFixed(0) ?? "—"} unit="°" />
                     </div>
 
-                    <div className="tabs tabs-boxed w-fit">
-                        <button className={`tab ${tab === "metrics" ? "tab-active" : ""}`} onClick={() => setTab("metrics")}>Metrics</button>
-                        <button className={`tab ${tab === "alerts" ? "tab-active" : ""}`} onClick={() => setTab("alerts")}>
-                            Alerts
-                            {alerts.filter(a => a.severity === "critical").length > 0 && (
-                                <span className="badge badge-error badge-xs ml-1">{alerts.filter(a => a.severity === "critical").length}</span>
-                            )}
-                        </button>
-                        <button className={`tab ${tab === "history" ? "tab-active" : ""}`} onClick={() => setTab("history")}>Action History</button>
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <div className="tabs tabs-boxed w-fit">
+                            <button className={`tab ${tab === "metrics" ? "tab-active" : ""}`} onClick={() => setTab("metrics")}>Metrics</button>
+                            <button className={`tab ${tab === "alerts" ? "tab-active" : ""}`} onClick={() => setTab("alerts")}>
+                                Alerts
+                                {alerts.filter(a => a.severity === "critical").length > 0 && (
+                                    <span className="badge badge-error badge-xs ml-1">{alerts.filter(a => a.severity === "critical").length}</span>
+                                )}
+                            </button>
+                            <button className={`tab ${tab === "history" ? "tab-active" : ""}`} onClick={() => setTab("history")}>Action History</button>
+                        </div>
+
+                        {tab === "metrics" && (
+                            <select
+                                className="select select-sm select-bordered"
+                                value={limit}
+                                onChange={(e) => setLimit(Number(e.target.value))}
+                            >
+                                <option value={50}>Last 50</option>
+                                <option value={100}>Last 100</option>
+                                <option value={250}>Last 250</option>
+                                <option value={500}>Last 500</option>
+                                <option value={99999}>All</option>
+                            </select>
+                        )}
                     </div>
 
                     {tab === "metrics" && (
