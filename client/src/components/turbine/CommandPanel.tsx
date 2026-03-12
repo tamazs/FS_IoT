@@ -65,7 +65,7 @@ export default function CommandPanel({ turbineId, onSuccess }: CommandPanelProps
                     <div className="grid grid-cols-2 gap-2">
                         <button
                             className={`btn btn-success btn-sm ${loading === "Start" ? "loading" : ""}`}
-                            onClick={() => send({ action: "start" }, "start")}
+                            onClick={() => send({ action: "start" }, "Start")}
                             disabled={!!loading}
                         >
                             <svg className="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +75,7 @@ export default function CommandPanel({ turbineId, onSuccess }: CommandPanelProps
                         </button>
                         <button
                             className={`btn btn-error btn-sm ${loading === "Stop" ? "loading" : ""}`}
-                            onClick={() => send({ action: "stop", reason: stopReason || undefined } as StopCommand, "stop")}
+                            onClick={() => send({ action: "stop", reason: stopReason || undefined } as StopCommand, "Stop")}
                             disabled={!!loading}
                         >
                             <svg className="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,7 +120,7 @@ export default function CommandPanel({ turbineId, onSuccess }: CommandPanelProps
                         </div>
                         <button
                             className={`btn btn-primary btn-sm w-full mt-2 ${loading === "SetPitch" ? "loading" : ""}`}
-                            onClick={() => send({ action: "setPitch", angle: pitch } as SetPitchCommand, "setPitch")}
+                            onClick={() => send({ action: "setPitch", angle: pitch } as SetPitchCommand, "SetPitch")}
                             disabled={!!loading}
                         >
                             Set Pitch
@@ -150,7 +150,7 @@ export default function CommandPanel({ turbineId, onSuccess }: CommandPanelProps
                         </div>
                         <button
                             className={`btn btn-secondary btn-sm w-full mt-2 ${loading === "SetInterval" ? "loading" : ""}`}
-                            onClick={() => send({ action: "setInterval", value: interval } as SetIntervalCommand, "setInterval")}
+                            onClick={() => send({ action: "setInterval", value: interval } as SetIntervalCommand, "SetInterval")}
                             disabled={!!loading}
                         >
                             Set Interval

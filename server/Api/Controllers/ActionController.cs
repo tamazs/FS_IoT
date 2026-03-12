@@ -49,7 +49,7 @@ public class ActionController(IMqttClientService mqtt, AppDbContext dbContext) :
     [HttpGet(nameof(GetActions))]
     public async Task<List<TurbineActionDto>> GetActions(string turbineId)
     {
-        var actions = await dbContext.TurbineActions.Where(a => a.TurbineId == turbineId).Include(a => a.User).ToListAsync();
+        var actions = await dbContext.TurbineActions.Where(a => a.TurbineId == turbineId).Include(a => a.User).OrderByDescending(a => a.Timestamp).ToListAsync();
         
         return actions.Select(a => new TurbineActionDto
         {

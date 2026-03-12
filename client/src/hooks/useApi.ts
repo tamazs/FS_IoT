@@ -47,6 +47,7 @@ export default function useApi() {
         try {
             const result = await authClient.registerUser(dto);
             toast.success("Register successful!");
+            navigate("/login");
             return result;
         }
         catch (e) {
